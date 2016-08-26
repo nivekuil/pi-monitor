@@ -1,25 +1,29 @@
 #!/usr/bin/env python3
-from bottle import route, static_file, run as bottle_run
+from bottle import route, run as bottle_run
 from subprocess import run, PIPE
+
 
 @route('/')
 def index():
     items = []
     items.extend([
-        run(["lscpu"], stdout=PIPE).stdout,
+        call("lscpu"),
 
-        b"cpufreq: " + run(
-            ["cat", "/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq"],
-            stdout=PIPE).stdout,
+        b"cpufreq: " +
+        call("cat", "/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq"),
 
-        run(["/opt/vc/bin/vcgencmd", "measure_temp"], stdout=PIPE).stdout,
+        call("/opt/vc/bin/vcgencmd", "measure_temp"),
 
-        run(["cat", "/proc/meminfo"], stdout=PIPE).stdout,
+        call("cat", "/proc/meminfo"),
 
     ])
 
     return b"".join(map(wrap_p, items))
-    
+
+
+def call(*args):
+    return run(args, stdout=PIPE).stdout
+
 
 def wrap_p(text):
     return b"<p>" + text + b"</p>"
