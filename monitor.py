@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from bottle import route, static_file, run as bottle_run
 from subprocess import run, PIPE
 
